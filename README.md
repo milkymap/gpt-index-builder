@@ -60,7 +60,7 @@ python main.py --transformer_model_name 'Sahajtomar/french_semantic' build-index
     --batch_size 8
 ```
 
-# Explore Index
+## Explore Index
 To explore the index, run the following command:
 
 ```bash
