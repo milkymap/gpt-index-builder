@@ -15,8 +15,6 @@ from rich.console import Console
 from log import logger 
 from strategies import convert_pdf2text, split_into_chunks, chunk_embeddings, gpt3_search, find_top_k, parse_url, load_transformer_model, get_embedding
 
-from runner import GPTRunner
-
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
 
 @click.group(chain=False, invoke_without_command=True)
@@ -144,32 +142,6 @@ def explore_index(ctx:click.core.Context, name:str, description:str, path2extrac
         except Exception:
             logger.exception("Exception occurred")
             keep_looping = False
-
-@group.command()
-@click.option('--name', type=str, required=True)
-@click.option('--description', type=str, required=True)
-@click.option('--path2extracted_features', type=click.Path(exists=True, dir_okay=False), required=True)
-@click.option('--top_k', type=int, default=7)
-@click.option('--telegram_token', type=str, required=True)
-@click.pass_context
-def deploy_on_telegram(ctx:click.core.Context, name:str, description:str, path2extracted_features:str, top_k:int, telegram_token:str):
-    with open(path2extracted_features, 'rb') as file_pointer:
-        extracted_features = pickle.load(file_pointer)
-    
-    logger.info(f"Loaded extracted features from: {path2extracted_features}")
-    with GPTRunner(
-        token=telegram_token,
-        name=name,
-        description=description,
-        top_k=top_k,
-        transformer_model_name=ctx.obj['transformer_model_name'],
-        cache_folder=ctx.obj['cache_folder'],
-        device=ctx.obj['device'],
-        corpus_embeddings=extracted_features['embeddings'],
-        chunks=extracted_features['chunks']
-    ) as runner:
-        runner.listen()
-
 
 if __name__ == '__main__':
     group(obj={})
